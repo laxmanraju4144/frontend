@@ -3,9 +3,6 @@ pipeline {
 
     environment {
         IMAGE_NAME = "manojkrishnappa/frontend:${GIT_COMMIT}"
-        AWS_REGION = "us-west-2"
-        CLUSTER_NAME = "itkannadigaru-cluster"
-        NAMESPACE     = "itkannadigaru"
     }
 
     stages {
@@ -18,7 +15,7 @@ pipeline {
 
         stage('Run Unit Tests') {
             steps {
-                dir('src/frontend') {
+                 {
                     sh 'go test ./...'
                 }
             }
@@ -26,7 +23,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                dir('src/frontend') {
+                {
                     sh '''
                         printenv
                         docker build -t ${IMAGE_NAME} .
@@ -54,22 +51,6 @@ pipeline {
                 sh 'docker push ${IMAGE_NAME}'
             }
         }
-
-        // Uncomment and configure once EKS cluster is ready
-        // stage('Deploy to EKS') {
-        //     steps {
-        //         withCredentials([[
-        //             $class: 'AmazonWebServicesCredentialsBinding',
-        //             credentialsId: 'aws-creds'
-        //         ]]) {
-        //             sh '''
-        //                 aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME}
-        //                 kubectl set image deployment/frontend \
-        //                     frontend=${IMAGE_NAME} -n ${NAMESPACE}
-        //             '''
-        //         }
-        //     }
-        // }
 
     }
 
