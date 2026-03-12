@@ -53,6 +53,10 @@ pipeline {
                     passwordVariable: 'GIT_PASSWORD'
                 )]) {
                     sh '''
+                        if [ -d "gitops" ]; then
+                            echo "gitops directory exists. Removing it..."
+                            rm -rf gitops
+                        fi
                         git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/ITkannadigaru/GitOps.git gitops
                         cd gitops/base/frontend/
 
